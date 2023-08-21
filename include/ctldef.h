@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #ifndef CTLDEF_H
 #define CTLDEF_H
 
@@ -8,5 +10,11 @@
     #define CTL_EXTC_OPEN
     #define CTL_EXTC_CLOSE
 #endif
+
+typedef struct ctl_keyvalue_t {
+    void* key;
+    size_t keylen;
+    void* value;
+} ctl_keyvalue;
 
 #endif

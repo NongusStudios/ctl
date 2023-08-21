@@ -16,7 +16,7 @@ ctl_hashmap ctl_hashmap_new(size_t valuelen){
     return map;
 }
 
-void ctl_hashmap_free_value(ctl_hashmap_value* value){
+void ctl_hashmap_free_value(ctl_keyvalue* value){
     free(value->key);
     free(value->value);
 }
@@ -71,11 +71,11 @@ bool ctl_hashmap_key_iseq(const void* a, size_t alen, const void* b, size_t blen
 }
 
 void ctl_hashmap_grow_and_rehash(ctl_hashmap* map){
-    ctl_vec(ctl_hashmap_value) values = ctl_hashmap_as_vec(map);
+    ctl_vec(ctl_keyvalue) values = ctl_hashmap_as_vec(map);
     ctl_hashmap newmap = ctl_hashmap_new(map->valuelen);
     ctl_vec_resize(ctl_vptr(newmap.buckets), ctl_vec_len(map->buckets)*CTL_HASHMAP_GROWTH_FACTOR);
 
-    ctl_vec_foreach(ctl_hashmap_value, value, values){
+    ctl_vec_foreach(ctl_keyvalue, value, values){
         void* v = ctl_hashmap_insert(&newmap, value->key, value->keylen);
         memcpy(v, value->value, map->valuelen);
     }
@@ -101,7 +101,7 @@ ctl_bucket* ctl_hashmap_get_last_bucket(ctl_bucket* root){
 void ctl_hashmap_init_bucket(ctl_bucket* bucket, const void* key, size_t keylen, size_t valuelen){
     bucket->used = true;
     bucket->next = NULL;
-    bucket->value = (ctl_hashmap_value){
+    bucket->value = (ctl_keyvalue){
         .key = malloc(keylen),
         .keylen = keylen,
         .value = calloc(1, valuelen),
@@ -171,7 +171,7 @@ bool  ctl_hashmap_erase(ctl_hashmap* map, const void* key, size_t keylen){
             to_erase->next = next->next;
             free(next);
         } else {
-            to_erase->value = (ctl_hashmap_value){0};
+            to_erase->value = (ctl_keyvalue){0};
             to_erase->used  = false;
         }
     } else {
@@ -210,13 +210,13 @@ bool ctl_hashmap_erase_str(ctl_hashmap* map, const char* key){
     return ctl_hashmap_erase(map, key, strlen(key)+1);
 }
 
-ctl_hashmap_value* ctl_hashmap_as_vec(ctl_hashmap* map){
+ctl_keyvalue* ctl_hashmap_as_vec(ctl_hashmap* map){
     assert(map);
     assert(map->buckets);
 
     if(ctl_vec_len(map->buckets) == 0) return NULL;
 
-    ctl_vec(ctl_hashmap_value) values = ctl_vec_with_capacity(map->count, sizeof(ctl_hashmap_value));
+    ctl_vec(ctl_keyvalue) values = ctl_vec_with_capacity(map->count, sizeof(ctl_keyvalue));
     
     ctl_vec_foreach(ctl_bucket, bucket, map->buckets){
         ctl_bucket* current = bucket;

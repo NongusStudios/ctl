@@ -9,14 +9,8 @@
 #define CTL_HASHMAP_MAX_LOAD_FACTOR 1.0
 #define CTL_HASHMAP_GROWTH_FACTOR 2
 
-typedef struct ctl_hashmap_value_t {
-    void* key;
-    size_t keylen;
-    void* value;
-} ctl_hashmap_value;
-
 typedef struct ctl_bucket_t {
-    ctl_hashmap_value    value;
+    ctl_keyvalue         value;
     bool                 used;
     struct ctl_bucket_t* next;
 } ctl_bucket;
@@ -43,7 +37,7 @@ ctl_bucket* ctl_hashmap_search_str(const ctl_hashmap* map, ctl_bucket** root, co
 void* ctl_hashmap_get_str(const ctl_hashmap* map, const char* key);
 bool ctl_hashmap_erase_str(ctl_hashmap* map, const char* key);
 
-ctl_hashmap_value* ctl_hashmap_as_vec(ctl_hashmap* map);
+ctl_keyvalue* ctl_hashmap_as_vec(ctl_hashmap* map);
 
 double ctl_hashmap_load_factor(const ctl_hashmap* map);
 
