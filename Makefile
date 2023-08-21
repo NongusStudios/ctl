@@ -2,15 +2,15 @@ CC = gcc
 FLAGS = -O0 -g -Wfatal-errors -Wall -pedantic -std=c17
 INCLUDE = -Iinclude
 
-LIB = libctl.a
-SHARED_LIB = libctl.so
+LIB = ./libctl.a
+SHARED_LIB = ./libctl.so
 
 SRC  = $(wildcard src/*.c)
 
 OBJ = $(SRC:%.c=%.o)
 
 OUT = out
-CURRENT_EXAMPLE = examples/main.c
+CURRENT_EXAMPLE = examples/hashmap.c
 
 .PHONY: all run
 
