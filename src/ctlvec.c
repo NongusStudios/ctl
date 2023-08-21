@@ -159,6 +159,9 @@ void ctl_vec_erase(void** ppvec, size_t index, void* dst){
 
     *ppvec = vec;
 }
+void ctl_vec_clear(void** vec){
+    ctl_vec_resize(vec, 0);
+}
 
 void* ctl_vec_clone(void* vec){
     return ctl_vec_new(vec, ctl_vec_len(vec), ctl_vec_typelen(vec));

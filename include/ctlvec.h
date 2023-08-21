@@ -5,14 +5,14 @@
 #ifndef CTLVEC_H
 #define CTLVEC_H
 
-#define ctl_vec(type) type*
-#define ctl_vec_init(type, ...) (type*)ctl_vec_new((type[]){__VA_ARGS__}, sizeof((type[]){__VA_ARGS__})/sizeof(type), sizeof(type))
-#define ctl_vec_init_empty(type) (type*)ctl_vec_new(NULL, 0, sizeof(type))
-#define ctl_vec_init_with_capacity(type, n) (type*)ctl_vec_with_capacity((n), sizeof(type))
+#define ctl_vec(type) type* /*! Used as a type qualifier for vectors. */
+#define ctl_vec_init(type, ...) (type*)ctl_vec_new((type[]){__VA_ARGS__}, sizeof((type[]){__VA_ARGS__})/sizeof(type), sizeof(type)) /*! e.g clt_vec(int) v = ctl_vec_init(int, 1, 2, 3, 4, 5); */
+#define ctl_vec_init_empty(type) (type*)ctl_vec_new(NULL, 0, sizeof(type)) /*! Initialises an empty vector of type. */
+#define ctl_vec_init_with_capacity(type, n) (type*)ctl_vec_with_capacity((n), sizeof(type)) /*! Initialises an empty vector of type with capacity of n. */
 
-#define ctl_vec_foreach(type, v, iter) for(type* v = iter; v != ctl_vec_end(iter); v++)
+#define ctl_vec_foreach(type, v, iter) for(type* v = iter; v != ctl_vec_end(iter); v++) /*! Allows for scuffed foreach emulation in C. */
 
-#define ctl_vptr(vec) (void**)&vec
+#define ctl_vptr(vec) (void**)&vec /*! Helper macro so you can do this 'ctl_vec_push(ctl_vptr(vec), ...)' instead of 'ctl_vec_push(&(void*)vec, ...)' */
 
 typedef enum ctl_vecpos_t {
     CTL_VECPOS_FRONT,
@@ -37,6 +37,7 @@ void ctl_vec_push(   void** vec, ctl_vecpos pos, const void* item);
 void ctl_vec_pop(    void** vec, ctl_vecpos pos, void* dst);
 void ctl_vec_insert( void** vec, size_t index, const void* item);
 void ctl_vec_erase(  void** vec, size_t index, void* dst);
+void ctl_vec_clear(  void** vec);
 
 void* ctl_vec_clone(void* vec);
 void* ctl_vec_end(void* vec);

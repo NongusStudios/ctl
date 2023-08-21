@@ -113,14 +113,14 @@ void* ctl_hashmap_insert(ctl_hashmap* map, const void* key, size_t keylen){
     assert(map);
     assert(map->buckets);
     assert(key && keylen > 0);
-
-    if(ctl_hashmap_load_factor(map) >= CTL_HASHMAP_MAX_LOAD_FACTOR){
-        ctl_hashmap_grow_and_rehash(map);
-    }
     
     void* v = ctl_hashmap_get(map, key, keylen);
     if(v) return v;
     else {
+        if(ctl_hashmap_load_factor(map) >= CTL_HASHMAP_MAX_LOAD_FACTOR){
+            ctl_hashmap_grow_and_rehash(map);
+        }
+
         size_t hash = ctl_hash_key(key, keylen) % ctl_vec_len(map->buckets);
         ctl_bucket* last = ctl_hashmap_get_last_bucket(&map->buckets[hash]);
         
@@ -171,7 +171,7 @@ bool  ctl_hashmap_erase(ctl_hashmap* map, const void* key, size_t keylen){
             to_erase->next = next->next;
             free(next);
         } else {
-            to_erase->value = (ctl_keyvalue){0};
+            to_erase->value = (ctl_keyvalue){.key = NULL, .keylen = 0, .value = NULL};
             to_erase->used  = false;
         }
     } else {
@@ -210,7 +210,7 @@ bool ctl_hashmap_erase_str(ctl_hashmap* map, const char* key){
     return ctl_hashmap_erase(map, key, strlen(key)+1);
 }
 
-ctl_keyvalue* ctl_hashmap_as_vec(ctl_hashmap* map){
+ctl_keyvalue* ctl_hashmap_as_vec(const ctl_hashmap* map){
     assert(map);
     assert(map->buckets);
 
@@ -229,6 +229,20 @@ ctl_keyvalue* ctl_hashmap_as_vec(ctl_hashmap* map){
     }
 
     return values;
+}
+ctl_hashmap ctl_hashmap_clone(const ctl_hashmap* map){
+    assert(map);
+    assert(map->buckets);
+
+    ctl_vec(ctl_keyvalue) values = ctl_hashmap_as_vec(map);
+    ctl_hashmap clone = ctl_hashmap_new(map->valuelen);
+
+    ctl_vec_foreach(ctl_keyvalue, value, values){
+        void* v = ctl_hashmap_insert(&clone, value->key, value->keylen);
+        memcpy(v, value->value, map->valuelen);
+    }
+
+    return clone;
 }
 
 double ctl_hashmap_load_factor(const ctl_hashmap* map){

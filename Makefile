@@ -27,6 +27,7 @@ run:
 
 clean:
 	rm $(OBJ)
+	rm $(LIB) $(SHARED_LIB)
 	rm $(OUT)
 
 src/%.o: src/%.c include/%.h

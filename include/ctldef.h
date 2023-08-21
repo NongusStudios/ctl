@@ -11,10 +11,11 @@
     #define CTL_EXTC_CLOSE
 #endif
 
+/*! Structure used in ctl_hashmap and ctl_map */
 typedef struct ctl_keyvalue_t {
-    void* key;
-    size_t keylen;
-    void* value;
+    void* key;     /*! Pointer to the key. */
+    size_t keylen; /*! Key length. */
+    void* value;   /*! The Value.  */
 } ctl_keyvalue;
 
 #endif
