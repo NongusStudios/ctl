@@ -2,33 +2,35 @@ CC = gcc
 FLAGS = -O0 -g -Wfatal-errors -Wall -pedantic -std=c17
 INCLUDE = -Iinclude
 
-LIB = ./libctl.a
-SHARED_LIB = ./libctl.so
+LIB = ./bin/libctl.a
+SHARED_LIB = ./bin/libctl.so
 
 SRC  = $(wildcard src/*.c)
+EXAMPLE_SRC = $(wildcard examples/*.c)
 
-OBJ = $(SRC:%.c=%.o)
+OBJ = $(SRC:src/%.c=bin/%.o)
+EXAMPLE_OUT = $(EXAMPLE_SRC:examples/%.c=bin/%.out)
 
-OUT = out
-CURRENT_EXAMPLE = examples/hashmap.c
+.PHONY: all
 
-.PHONY: all run
+all: build
 
-all: build run
+release: FLAGS = -O3 -std=c17
+release: build
+
+examples: build $(EXAMPLE_OUT)
 
 build: $(OBJ)
 	ar rcs $(LIB) $(OBJ)
 	$(CC) -shared -o $(SHARED_LIB) $(OBJ)
 
-	$(CC) -o $(OUT) $(CURRENT_EXAMPLE) $(FLAGS) $(INCLUDE) $(SHARED_LIB)
-
-run:
-	./$(OUT)
-
 clean:
 	rm $(OBJ)
 	rm $(LIB) $(SHARED_LIB)
-	rm $(OUT)
+	rm $(EXAMPLE_OUT)
 
-src/%.o: src/%.c include/%.h
+bin/%.out: examples/%.c
+	$(CC) -o $@ $< $(SHARED_LIB) $(FLAGS) $(INCLUDE)
+
+bin/%.o: src/%.c include/%.h
 	$(CC) -o $@ -c $< $(FLAGS) $(INCLUDE)

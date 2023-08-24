@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.26)
+project(ctl VERSION 1.0)
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ./bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ./bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ./bin)
+set(CMAKE_C_STANDARD 17)
+
+option(BUILD_SHARED_LIBS ON)
+option(BUILD_EXAMPLES    ON)
+
+include_directories(include)
+
+
