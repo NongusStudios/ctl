@@ -3,4 +3,5 @@
 *.so
 *.dll
 *.lib
+*.o
 out
